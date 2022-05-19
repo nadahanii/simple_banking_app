@@ -1,6 +1,6 @@
 import 'package:basic_banking_app/Model/Transfer.dart';
 import 'package:basic_banking_app/Screens/CustomersList.dart';
-import 'package:basic_banking_app/Widgets/MainDrawer.dart';
+
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -18,11 +18,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: SafeArea(
-          child: MainDrawer(title: widget.title,),
-        ),
-      ),
+
       appBar: AppBar(
         title: Center(child: Text(widget.title,style: TextStyle(fontWeight: FontWeight.bold),)),
       ),

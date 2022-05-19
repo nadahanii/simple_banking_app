@@ -85,7 +85,7 @@ class DatabaseHelper {
 
   Future<List<User>?> queryAllUsers() async {
     final db = await instance.database;
-    final result = await db.query(tableUsers);
+    final result = await db.query(tableUsers,limit: 10);
 
     return result.map((json) => User.fromJson(json)).toList();
   }
@@ -96,20 +96,16 @@ class DatabaseHelper {
     return result.map((json) => Transfer.fromJson(json)).toList();
   }
 
-  Future/*<int>*/ updateUser(int id,double balance) async {
+  Future updateUser(User user) async {
     final db = await instance.database;
-
-    db.rawUpdate(''' 
-    UPDATE users SET cur_balance=? Where id=?''',
-    ['$balance',id]
-    );
-    /*return db.update(
-      tableUsers,
-      User user = queryUserById(id),
-      where: '${UserFields.id} = ?',
+    db.update(tableUsers,
+    user.toJson(),
+      where: '${UserFields.id} = ? ',
       whereArgs: [user.id],
-    );*/
+    );
+
   }
+
 
   Future<int> deleteUser(int id) async {
     final db = await instance.database;

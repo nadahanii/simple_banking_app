@@ -64,7 +64,7 @@ class _CustomersListState extends State<CustomersList> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            CustomerProfile(index: (index + 1))));
+                            CustomerProfile(index: (index+1))));
               },
               title: isLoading
                   ? CircularProgressIndicator()

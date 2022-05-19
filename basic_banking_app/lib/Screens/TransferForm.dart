@@ -8,45 +8,45 @@ class TransferForm extends StatefulWidget {
   const TransferForm({
     Key? key,
     required this.index,
+
   }) : super(
           key: key,
         );
   final int index;
+
   @override
   State<TransferForm> createState() => _TransferFormState();
 }
 
 class _TransferFormState extends State<TransferForm> {
-  User? sender;
-  User? receiver;
+  List<User>? users;
+  bool isLoading = false;
+
   late int transfer_to ;
   late double amount_to_transfer ;
   final _formKey = GlobalKey<FormState>();
 
-  Future retrieveSenderAndReceiver() async {
-    sender = await DatabaseHelper.instance.queryUserById(widget.index);
-    receiver = await DatabaseHelper.instance.queryUserById(transfer_to);
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+
+    refreshUsers();
+  }
+  Future refreshUsers() async {
+    setState(() => isLoading = true);
+
+    this.users = (await DatabaseHelper.instance.queryAllUsers())!;
+
+    setState(() => isLoading = false);
   }
 
-  Future updateSender() async
-  {
-    /*final  tempUser= sender!.copy(
-      name: sender!.name,
-      email: sender!.email,
-      cur_balance: (sender!.cur_balance-amount_to_transfer)
-    );*/
-    await DatabaseHelper.instance.updateUser(widget.index,(sender!.cur_balance-amount_to_transfer));
-  }
 
-  Future updateReceiver() async
-  {
-    /*final  tempUser= receiver!.copy(
-        name: receiver!.name,
-        email: receiver!.email,
-        cur_balance: (receiver!.cur_balance+amount_to_transfer)
-    );*/
-    await DatabaseHelper.instance.updateUser(transfer_to,(receiver!.cur_balance+amount_to_transfer));
-  }
+
+
 
 
 
@@ -110,45 +110,36 @@ class _TransferFormState extends State<TransferForm> {
                       child: const Text('Submit'),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          retrieveSenderAndReceiver();
-                          if(sender!=null && receiver!=null)
+                          if(users![widget.index].cur_balance>amount_to_transfer)
                             {
-                              if(sender!.cur_balance>amount_to_transfer)
-                                {
-                                  updateSender();
-                                  updateReceiver();
-                                }
+                              double sender_new_balance=users![widget.index].cur_balance-amount_to_transfer;
+                              double receiver_new_balance=users![transfer_to].cur_balance+amount_to_transfer;
+                              User tempSender=new User(id: users![widget.index].id,name: users![widget.index].name,
+                              email: users![widget.index].email,cur_balance: sender_new_balance
+                              );
+
+                              User tempReceiver=new User(id: users![transfer_to].id,name: users![transfer_to].name,
+                                  email: users![transfer_to].email,cur_balance: receiver_new_balance
+                              );
+
+                              DatabaseHelper.instance.updateUser(tempSender);
+                              DatabaseHelper.instance.updateUser(tempReceiver);
+                              Transfer transfer= new Transfer(senderName: users![widget.index].name,receiverName: users![transfer_to].name,
+                              transferredAmount: amount_to_transfer
+                              );
+                              DatabaseHelper.instance.insertTransfer(transfer);
+
+                            }
+                          else
+                            {
+                              showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: const Text("Your current balance is less than the amount to transfer"),
+                                )
+                              );
                             }
 
-
-
-                         /* if (sender != null && receiver != null) {
-                            if (sender!.cur_balance > amount_to_transfer) {
-                              //inserting transfer in transfers table
-                              Transfer tempTransfer = Transfer(
-                                  senderName: sender!.name,
-                                  receiverName: receiver!.name,
-                                  transferredAmount: amount_to_transfer);
-                              DatabaseHelper.instance
-                                  .insertTransfer(tempTransfer);
-
-                              //performing transfer
-                              User tempUser1 = User(
-                                  id: sender!.id,
-                                  name: sender!.name,
-                                  email: sender!.email,
-                                  cur_balance: (sender!.cur_balance -
-                                      amount_to_transfer));
-                              User tempUser2 = User(
-                                  id: receiver!.id,
-                                  name: receiver!.name,
-                                  email: receiver!.email,
-                                  cur_balance: (receiver!.cur_balance +
-                                      amount_to_transfer));
-                              DatabaseHelper.instance.updateUser(tempUser1);
-                              DatabaseHelper.instance.updateUser(tempUser2);
-                            }
-                          }*/
 
                           Navigator.popUntil(context, ModalRoute.withName('/'));
                         }

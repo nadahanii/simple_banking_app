@@ -17,7 +17,8 @@ class CustomerProfile extends StatefulWidget {
 }
 
 class _CustomerProfileState extends State<CustomerProfile> {
-  User? user;
+  late User user;
+
   bool isLoading = false;
 
   @override
@@ -56,7 +57,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
                         Padding(
                           padding: EdgeInsets.all(8),
                           child: Text(
-                            "Name : \n" + this.user!.name,
+                            "Name : \n" + this.user.name,
                             style: TextStyle(fontSize: 23, color: Colors.white),
                           ),
                         ),
@@ -74,7 +75,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
                         Padding(
                           padding: EdgeInsets.all(5),
                           child: Text(
-                            "Email :\n" + this.user!.email,
+                            "Email :\n" + this.user.email,
                             style: TextStyle(fontSize: 23, color: Colors.white),
                           ),
                         ),
@@ -91,7 +92,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
                           padding: EdgeInsets.all(8),
                           child: Text(
                             "Current Balance : \n " +
-                                this.user!.cur_balance.toString(),
+                                this.user.cur_balance.toString(),
                             style: TextStyle(fontSize: 23, color: Colors.white),
                           ),
                         ),
@@ -120,7 +121,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => TransferForm(index:widget.index)));
+                                        builder: (context) => TransferForm(index:widget.index-1)));
                               },
                             )),
                       ],
